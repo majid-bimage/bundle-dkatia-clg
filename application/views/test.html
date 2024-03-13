@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Recognition</title>
+  <script src="https://github.com/justadudewhohacks/face-api.js/tree/master/dist/face-api.js"></script>
+</head>
+<body>
+  <video id="video" width="640" height="480" autoplay></video>
+  <canvas id="canvas" width="640" height="480"></canvas>
+
+  <script>
+    setTimeout(() => {
+    // Wait for the face-api.js to load
+    faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+    faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+    faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+    },3000);
+    // Access the webcam
+    navigator.getUserMedia(
+      { video: {} },
+      stream => startVideo(stream),
+      err => console.error(err)
+    );
+
+    async function startVideo(stream) {
+      const video = document.getElementById('video');
+      video.srcObject = stream;
+
+      video.addEventListener('play', () => {
+        const canvas = faceapi.createCanvasFromMedia(video);
+        document.body.append(canvas);
+        const displaySize = { width: video.width, height: video.height };
+        faceapi.matchDimensions(canvas, displaySize);
+
+        setInterval(async () => {
+          const detections = await faceapi.detectAllFaces(video,
+            new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptors();
+          const resizedDetections = faceapi.resizeResults(detections, displaySize);
+          canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+          faceapi.draw.drawDetections(canvas, resizedDetections);
+          faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+        }, 100);
+      });
+    }
+  </script>
+</body>
+</html>
