@@ -58,4 +58,41 @@ class BundleController extends CI_Controller {
         echo "<a href='" . base_url('BundleController') . "'>Go Back</a><br>";
 
     }
+
+    public function bundle_upload(){
+        $this->load->view('bundle/bundle_upload');
+    }
+
+
+    public function bundle_insert_data() {
+        // Get the data from the request
+        $data = array(
+            'id' => $this->input->post('id'),
+            'schid' => $this->input->post('schid'),
+            'programid' => $this->input->post('programid'),
+            'sectionid' => $this->input->post('sectionid'),
+            'examid' => $this->input->post('examid'),
+            'subjectid' => $this->input->post('subjectid'),
+            'bundlepath' => $this->input->post('bundlepath'),
+            'status' => $this->input->post('status'),
+            'createdby' => $this->input->post('createdby'),
+            'createddatetime' => $this->input->post('createddatetime')
+        );
+
+        // Insert data into the database
+        $insert_id = $this->your_model->insert_data($data);
+
+        // Check if the insertion was successful
+        if ($insert_id) {
+            // Data inserted successfully
+            echo "Data inserted successfully. Insert ID: " . $insert_id."<br>";
+        echo "<a href='" . base_url('BundleController') . "'>Go Back</a><br>";
+
+        } else {
+            // Error occurred while inserting data
+            echo "Error occurred while inserting data.<br>";
+        echo "<a href='" . base_url('BundleController') . "'>Go Back</a><br>";
+
+        }
+    }
 }
